@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/api/v1/slots")
 public class SlotController {
@@ -20,7 +21,7 @@ public class SlotController {
 
     @RequestMapping("/register")
     public ResponseEntity<Void> register(@RequestParam Long userId) {
-        slotService.registerRequest(userId);
+        slotService.register(userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
