@@ -21,10 +21,6 @@ public class SlotServiceTest {
         //Person.setCounter(0);
     }
 
-//    @AfterEach
-//    public void resetCounter(){
-//        Person.setCounter(0);
-//    }
     //Register Tests---------------------------------------------------------------
     @Test
     public void testRegister_hasSpace_registers() {
