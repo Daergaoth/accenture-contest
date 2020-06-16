@@ -1,11 +1,10 @@
-package com.accenture.hr.slots;
+package com.accenture.hr.controller;
 
+import com.accenture.hr.slots.SlotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -19,10 +18,16 @@ public class SlotController {
         this.slotService = slotService;
     }
 
-    @RequestMapping("/register")
+    @PostMapping("/register")
     public ResponseEntity<Void> register(@RequestParam Long userId) {
         slotService.register(userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<Void> status(@RequestParam Long userId){
+        slotService.status(userId);
+        return null;
     }
 
 }
