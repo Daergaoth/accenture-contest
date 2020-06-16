@@ -13,20 +13,18 @@ import java.util.List;
 @Service
 @Transactional
 public class SlotService {
-
+    private int counter = 0;
     private static final Logger log = LoggerFactory.getLogger(SlotService.class);
-
     private final int currentLimit;
     private int currentFreePlaces;
-    private List<Person> peopleInsideList = new ArrayList<>();
-    private List<Person> peopleWaitingList = new ArrayList<>();
+    private final List<Person> peopleInsideList = new ArrayList<>();
+    private final List<Person> peopleWaitingList = new ArrayList<>();
 
     @Autowired
-    public SlotService(Integer currentLimit, List<Person> peopleInsideList, List<Person> peopleWaitingList) {
+    public SlotService(Integer currentLimit) {
         this.currentLimit = 250 * currentLimit / 100;
-        this.peopleInsideList = peopleInsideList;
-        this.peopleWaitingList = peopleWaitingList;
         this.currentFreePlaces = this.currentLimit;
+        counter++;
     }
 
     //enter once/day
@@ -35,11 +33,11 @@ public class SlotService {
         Person personOnInsideList = searchByUserIdOnInsideList(userId);
         if (personOnWaitingList != null && personOnInsideList != null) {
             log.error("User is already in building! UserId: {}", userId);
-        } else if (personOnWaitingList != null && personOnInsideList == null) {
+        } else if (personOnWaitingList != null) {
             log.error("User is already on waiting list! UserId: {}", userId);
-        } else if (personOnWaitingList == null && personOnInsideList == null) {
-            Person person = new Person(userId);
-            peopleWaitingList.add(person);
+        } else if (personOnInsideList == null) {
+            Person person = new Person(userId,counter);
+            counter++;
             if (person.getSerial() <= currentLimit) {
                 peopleInsideList.add(person);
                 currentFreePlaces--;
@@ -47,6 +45,7 @@ public class SlotService {
             } else {
                 int positionInLine = calculatePositionInQueue(person);
                 log.debug("Your position in the line is: {}.", positionInLine);
+                peopleWaitingList.add(person);
             }
         }
     }
@@ -74,7 +73,7 @@ public class SlotService {
     }
 
     public void entry(Long userId) {
-        peopleInsideList.sort(new PersonComaparator());
+        peopleInsideList.sort(new PersonComparator());
         Person personToEnterOnWaitingList = searchByUserIdOnWaitingList(userId);
         Person personToEnterOnInsideList = searchByUserIdOnInsideList(userId);
         if (personToEnterOnInsideList != null) {
@@ -87,6 +86,7 @@ public class SlotService {
             int positionInLine = calculatePositionInQueue(personToEnterOnWaitingList);
             if (positionInLine <= currentFreePlaces) {
                 peopleInsideList.add(personToEnterOnWaitingList);
+                peopleWaitingList.remove(personToEnterOnWaitingList);
                 currentFreePlaces--;
                 log.debug("Successfully entered the building. UserId: {}", userId);
             } else {
@@ -120,7 +120,7 @@ public class SlotService {
     }
 
     private int calculatePositionInQueue(Person person) {
-        peopleInsideList.sort(new PersonComaparator());
+        peopleInsideList.sort(new PersonComparator());
         Person lastPersonEntered;
         try {
             lastPersonEntered = peopleInsideList.get(peopleInsideList.size() - 1);

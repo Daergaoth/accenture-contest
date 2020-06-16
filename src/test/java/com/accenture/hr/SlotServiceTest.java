@@ -1,36 +1,30 @@
 package com.accenture.hr;
 
-import com.accenture.hr.slots.Person;
 import com.accenture.hr.slots.SlotService;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @ExtendWith(MockitoExtension.class)
 public class SlotServiceTest {
 
     private Integer currentLimit = 10;
-    private List<Person> peopleInside = new ArrayList<>();
-    private List<Person> peopleWaiting = new ArrayList<>();
-    private SlotService slotService = new SlotService(currentLimit, peopleInside, peopleWaiting);
+    private SlotService slotService = new SlotService(currentLimit);
 
 
 
     @BeforeEach
     private void init() {
-        slotService = new SlotService(currentLimit, peopleInside, peopleWaiting);
+        slotService = new SlotService(currentLimit);
+        //Person.setCounter(0);
     }
 
-    @AfterEach
-    public void resetCounter(){
-        Person.setCounter(0);
-    }
+//    @AfterEach
+//    public void resetCounter(){
+//        Person.setCounter(0);
+//    }
     //Register Tests---------------------------------------------------------------
     @Test
     public void testRegister_hasSpace_registers() {
@@ -56,7 +50,7 @@ public class SlotServiceTest {
         }
 
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(26, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(1, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -69,7 +63,7 @@ public class SlotServiceTest {
         slotService.register(40L);
 
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(27, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(2, slotService.getPeopleWaitingList().size());
     }
 
     //Exit Tests-----------------------------------------------------------
@@ -79,7 +73,7 @@ public class SlotServiceTest {
         slotService.register(userId);
         slotService.exit(userId);
         Assertions.assertEquals(0, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(1, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -89,7 +83,7 @@ public class SlotServiceTest {
         slotService.exit(userId);
         slotService.exit(userId);
         Assertions.assertEquals(0, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(1, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -112,7 +106,7 @@ public class SlotServiceTest {
         slotService.register(userId);
         slotService.entry(userId);
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(26, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -126,7 +120,7 @@ public class SlotServiceTest {
         slotService.entry(userId);
         slotService.entry(userId);
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(26, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -139,7 +133,7 @@ public class SlotServiceTest {
         slotService.entry(userId);
 
         Assertions.assertEquals(slotService.getCurrentLimit()-1, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(25, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -149,7 +143,7 @@ public class SlotServiceTest {
         slotService.entry(userId);
 
         Assertions.assertEquals(1, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(1, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -161,7 +155,7 @@ public class SlotServiceTest {
         slotService.register(userId);
         slotService.entry(userId);
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(26, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(1, slotService.getPeopleWaitingList().size());
     }
 
     //Status Tests---------------------------------------------------
@@ -178,7 +172,7 @@ public class SlotServiceTest {
         slotService.status(userId);
 
         Assertions.assertEquals(4, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(4, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(0, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -197,7 +191,7 @@ public class SlotServiceTest {
         slotService.status(userId);
 
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(29, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(4, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -218,7 +212,7 @@ public class SlotServiceTest {
         slotService.status(userId);
 
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(29, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(3, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -238,7 +232,7 @@ public class SlotServiceTest {
         slotService.status(userId);
 
         Assertions.assertEquals(slotService.getCurrentLimit()-1, slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(29, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(4, slotService.getPeopleWaitingList().size());
     }
 
     @Test
@@ -256,7 +250,7 @@ public class SlotServiceTest {
         slotService.status(userId);
 
         Assertions.assertEquals(slotService.getCurrentLimit(), slotService.getPeopleInsideList().size());
-        Assertions.assertEquals(28, slotService.getPeopleWaitingList().size());
+        Assertions.assertEquals(3, slotService.getPeopleWaitingList().size());
     }
 
 }
