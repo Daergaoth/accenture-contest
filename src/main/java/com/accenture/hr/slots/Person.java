@@ -1,15 +1,13 @@
 package com.accenture.hr.slots;
 
-import org.springframework.stereotype.Component;
-@Component
-public class Person{
+public class Person {
 
-    private final long userId;
+    private final Long userId;
 
     private final int serial;
 
 
-    public Person(long userId,int counter) {
+    public Person(Long userId, int counter) {
 
         this.userId = userId;
         serial = counter;

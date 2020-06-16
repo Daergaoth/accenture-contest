@@ -27,7 +27,7 @@ public class SlotService {
 
     @Autowired
     public SlotService(Integer currentLimit) {
-        this.currentLimit = 250 * currentLimit / 100;
+        this.currentLimit = currentLimit;
         this.currentFreePlaces = this.currentLimit;
         counter++;
     }
@@ -37,19 +37,19 @@ public class SlotService {
         Person personOnWaitingList = searchByUserIdOnWaitingList(userId);
         Person personOnInsideList = searchByUserIdOnInsideList(userId);
         ResgisterResponse resgisterResponse = new ResgisterResponse();
-        if (personOnWaitingList != null && personOnInsideList != null) {
+        if (personOnWaitingList == null && personOnInsideList != null) {
             log.error("User is already in building! UserId: {}", userId);
             resgisterResponse.setStatus(Statuses.ALREADY_IN_BUILDING);
         } else if (personOnWaitingList != null) {
             log.error("User is already on waiting list! UserId: {}", userId);
             resgisterResponse.setStatus(Statuses.ALREADY_ON_WAITINGLIST);
         } else if (personOnInsideList == null) {
-            Person person = new Person(userId,counter);
+            Person person = new Person(userId, counter);
             counter++;
             if (person.getSerial() <= currentLimit) {
                 peopleInsideList.add(person);
                 currentFreePlaces--;
-                //log.debug("You can enter the building whenever you want! UserId: {}", userId);
+                log.debug("You can enter the building whenever you want! UserId: {}", userId);
                 resgisterResponse.setStatus(Statuses.CAN_ENTER);
             } else {
                 int positionInLine = calculatePositionInQueue(person);
@@ -65,26 +65,26 @@ public class SlotService {
         Person personOnWaitingList = searchByUserIdOnWaitingList(userId);
         Person personOnInsideList = searchByUserIdOnInsideList(userId);
         StatusResponse statusResponse = new StatusResponse();
-        if (personOnInsideList != null){
-            if (personOnInsideList.getSerial()<currentLimit){
+        if (personOnInsideList != null) {
+            if (personOnInsideList.getSerial() < currentLimit) {
                 log.debug("You can enter the building whenever you want! UserId: {}", userId);
                 statusResponse.setStatus(Statuses.CAN_ENTER);
-            }else {
+            } else {
                 log.error("This person is already inside. UserId: {}", userId);
                 statusResponse.setStatus(Statuses.ALREADY_IN_BUILDING);
             }
-        }else if(personOnWaitingList != null){
+        } else if (personOnWaitingList != null) {
             int positionInLine = calculatePositionInQueue(personOnWaitingList);
-            if (positionInLine <= currentFreePlaces){
+            if (positionInLine <= currentFreePlaces) {
                 log.debug("You can enter the building whenever you want! UserId: {}", userId);
                 statusResponse.setStatus(Statuses.CAN_ENTER);
-            }else{
+            } else {
                 positionInLine -= currentFreePlaces;
                 log.debug("Your position in the line is: {}.", positionInLine);
                 statusResponse.setStatus(Statuses.POSITION_IN_LINE);
                 statusResponse.setQueuePosition(positionInLine);
             }
-        }else{
+        } else {
             log.error("You have to register first. UserId: {}", userId);
             statusResponse.setStatus(Statuses.NOT_REGISTERED);
         }
